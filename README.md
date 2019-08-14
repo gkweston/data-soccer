@@ -1,2 +1,3 @@
 # data-soccer
-Basic automated soccer game to practice implementation of human teamwork traits in traditional computers
+Basic automated soccer game to experiment with modeling human behavior in a digital environment. Focusing specifically on
+teamwork traits.
