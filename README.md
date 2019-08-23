@@ -39,9 +39,9 @@ If all teamwork traits are succesfully implemented, to the point that Team 1 per
 
 Supplemental
 -
-Being in the early stages of this project, some pseudocode has been outlined for the implementation of teamwork traits. Foundation of controller scripts uploaded. (08/21/2019)
+Being in the early stages of this project, some pseudocode has been outlined for the implementation of teamwork traits. Foundation of controller scripts uploaded. (Comments added 08/23/2019)
 
-These teamwork traits are specifically picked from an [article on effective teamwork skills by Mike Schoultz](https://medium.com/@mikeschoultz/10-team-characteristics-for-effective-teamwork-e0429b362ddd)
+These teamwork traits are specifically picked from an [article on effective teamwork skills by Mike Schoultz.](https://medium.com/@mikeschoultz/10-team-characteristics-for-effective-teamwork-e0429b362ddd)
 
 
 
