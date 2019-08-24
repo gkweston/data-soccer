@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 // transforms the ball continuously in a figure 8 to test player controller scripts
+// update so player shots are defined by a randomized s-curve, randomized parameters of figure 8
 
 public class ControllerBall : MonoBehaviour
 {
@@ -24,7 +25,11 @@ public class ControllerBall : MonoBehaviour
     private float _distanceToBall;
     private float _distanceToGoal;
     private bool _takeShot;
-    
+
+    public float constant;    // defines A in S-Curve for shooting mechanics
+    float xComp;   // for S-curve
+    float yComp;
+    private float randomNumber;
     
     void Start()    // assign center of figure 8, default the player to not having possession, define goal position
     {
@@ -33,10 +38,13 @@ public class ControllerBall : MonoBehaviour
         _goalLine.x = 0f;
         _goalLine.y = 5.5f;
 
+        randomNumber = Random.Range(-0.3f, 0.3f);    // try in for loop for more variations
+        constant = 10 * shotRadius;
     }
 
     void Update()
     {
+        
         _distanceToBall = Vector2.Distance(transform.position, player1Trans.position);    // update player distances
         _distanceToGoal = Vector2.Distance(player1Trans.position, _goalLine);
 
@@ -54,8 +62,8 @@ public class ControllerBall : MonoBehaviour
         {
             _angle += rotateSpeed * Time.deltaTime;
         
-            var offset = new Vector2( Mathf.Sin(_angle) * Mathf.Cos(_angle), Mathf.Sin(_angle)) * radius;
-            transform.position = _center + offset;
+            var offset = new Vector2( 10 * randomNumber * Mathf.Sin(_angle) * Mathf.Cos(_angle), 2 * randomNumber * Mathf.Sin(_angle)) * radius;
+            transform.position = _center + offset;    // randomized figure 8
         }
         else    // otherwise translate ball with player until it is in shooting radius
         {
@@ -65,14 +73,31 @@ public class ControllerBall : MonoBehaviour
             }
         }
 
-        if (_distanceToGoal < shotRadius)    // player has ball and is within shooting radius
+        if (_distanceToGoal < shotRadius && transform.position.y < 5.5f)    // player has ball and is within shooting radius
         {
             _takeShot = true;
         }
 
-        if (_takeShot)    // player takes shot, will utilize randomized exp. func which adds curve to ball and defines a chance of scoring goal based on distance
+
+        if (_takeShot)    // player takes shot, with choppy randomized s-curve defining chance of scoring on goal
         {
-            transform.position = Vector2.MoveTowards(transform.position, _goalLine, shotSpeed);
+            for (var i = 0; i < 10; i ++)
+            {
+
+                if (transform.position.y > 5.5)
+                {
+                    break;
+                }
+                
+                xComp = randomNumber * i;
+                yComp = (constant / (1 + Mathf.Exp(-i))) - (constant / 2);
+
+                transform.position = Vector2.MoveTowards(transform.position, new Vector2(xComp, yComp), shotSpeed);
+
+                xComp = transform.position.x;
+                yComp = transform.position.y;
+                
+            }
         }
     }
 }
