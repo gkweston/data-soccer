@@ -70,7 +70,7 @@ public class ControllerBall : MonoBehaviour
     {
         _center = transform.position;
         _angle += rotateSpeed * Time.deltaTime;
-        var offset = new Vector2(Mathf.Cos(_angle), Mathf.Sin(_angle)) * radius;
+        var offset = new Vector2(Mathf.Cos(_angle), Mathf.Sin(_angle) * Mathf.Cos(_angle)) * radius;
         transform.position = _center + offset;
     }
 
