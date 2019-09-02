@@ -1,7 +1,19 @@
 # data-soccer
-Automated soccer game to experiment with modeling human behavior in a digital environment, then designing processes that may model similar behaviors without explicit directions. Focusing specifically on teamwork traits. 
+### tl;dr:
+Automated soccer game to experiment with modeling human behavior in a digital environment, then designing processes that may model similar behaviors without explicit algorithms. Focusing specifically on teamwork traits. The Unity Engine is utilized as a platform because of its accessabillity, which defaults to C#.
 
-Various traits are necessary among human teams to effectively complete tasks as a cohensive unit. If similar traits may be implemented in a digital environment, they may facillitate a more efficient execution of end goals. This project will approach how these traits can effectively be implemented from a computing standpoint. If these processes provide data that can allow for the isolation of trends, then an automated approach will be designed to "train" these traits in a system without explicitely writing code to achieve those ends. Below is a breakdown of this project in its early planning stages:
+# Overview
+Various traits are necessary among human teams to effectively complete tasks as a cohensive unit. If similar traits may be implemented in a digital environment, they may facillitate a more efficient execution of end goals. This project will approach how these traits can effectively be implemented from a computing standpoint. If these processes provide data that can allow for the isolation of trends, then an automated approach will be designed to "train" these traits in a system without explicitly writing code to achieve those ends. Explicit code is loosely defined here as direct classes, functions or conditionals which dictate the program's actions. 
+>So, normal code right? 
+
+Yes, but no. If you're coding a dart's path, and script it to traverse a vector directly in line to the target, that's the explicit code the final stage of this project aims to avoid. Instead we can give the system a range of directions and magnitudes that it can pseudo-randomly "pick," and nudge it in the right direction if it stumbles upon one which gets the dart close.
+>Like strengthening a pathway between nodes in a neural-network...
+
+Bull's-eye!
+
+Below is a breakdown of this project in its early planning stages, including a quick note on the language it is coded in and using the Unity Engine as a platform in the first place.
+
+*Although learning C#, and strengthening an OOP approach is a nice side effect, the essence of this project is how algorithms can be designed to model (however limited in scope) human behaviour; and furthermore, if it is possible to develop a system which will "train" these behaviours into a control group. This training process is planned to be executed through another language, but built from the ground up (i.e. avoiding preexisting machine/deep learning libraries such as Python's sci-kit learn or Tensor Flow). Unity is a nice proving grounds for something like this because of its accesibillity, relative ease-of-use and abillity to interface API's in developer-mode.*
 
 System layout and Stage 1:
 -
@@ -39,7 +51,7 @@ If all teamwork traits are succesfully implemented, to the point that Team 1 per
 
 Supplemental
 -
-Being in the early stages of this project, some pseudocode has been outlined for the implementation of teamwork traits. Foundation of controller scripts uploaded. (Comments added 08/23/2019)
+Being in the early stages of this project, some pseudocode has been outlined for the implementation of teamwork traits. Foundation of controller scripts uploaded. (Comments added 09/01/2019)
 
 These teamwork traits are specifically picked from an [article on effective teamwork skills by Mike Schoultz.](https://medium.com/@mikeschoultz/10-team-characteristics-for-effective-teamwork-e0429b362ddd)
 
