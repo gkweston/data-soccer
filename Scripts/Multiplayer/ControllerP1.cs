@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Timers;
@@ -27,16 +28,27 @@ public class ControllerP1 : MonoBehaviour
     private bool _possession;
     
     // <stamina variables> //
-    private bool _hasStamina;
-    public float staminaCounter = 5;
-    private float _maxStamina;
-    private float _staminaBoost = 2;
-    private float _speed;
-    private float _defaultSpeed = 1;
+    //private bool _hasStamina;
+    //public float stamina = 5;
+    //private float _maxStamina;
+    //private float _speedBoost = 2;
+    //private float _speed;
+    //private float _defaultSpeed = 1;
     
+    private Vector2 _lastPosition;
+    private Vector2 _currentPosition;
+    private float _deltaDistance;
+    
+    private bool _hasStamina;
+    public float stamina;
+    private float _maxStamina = 5;
+    private float _speed = 1;
+    private float _defaultSpeed;
+    private float _speedBoost = 2;
+
     
     private float _deltaPosition;    //for velocity based stamina system
-
+    
     
     void Start()
     {
@@ -45,8 +57,11 @@ public class ControllerP1 : MonoBehaviour
         _goalLine.y = 5.5f;
         
         // <stamina Counter> //
-        _maxStamina = staminaCounter;
+
         _defaultSpeed = _speed;
+        stamina = _maxStamina;
+        
+        _lastPosition = transform.position;
 
     }
     
@@ -55,16 +70,7 @@ public class ControllerP1 : MonoBehaviour
         var position = transform.position;
         _distanceToBall = Vector2.Distance(position, ballTrans.position);    // updates distance to ball and goal to allow for player transform
         _distanceToGoal = Vector2.Distance(position, _goalLine);
-
-        if (_distanceToBall <= .25f && !_takeShot)    // defines radius which allows player to take possession of ball
-        {
-            _possession = true;
-        }
-        else
-        {
-            _possession = false;
-        }
-
+        
         float step = _speed * Time.deltaTime;    // defines velocity which player moves
         
         if (_possession && !_takeShot)    // if the player has ball, but is outside shooting radius, move towards goal
@@ -83,42 +89,48 @@ public class ControllerP1 : MonoBehaviour
     
     void Update()
     {
+        _possession = FindObjectOfType<ControllerBall>().p1Possession;    // test for expensive invocation
+
+        //if (!_possession)
+        //{
+        //    MoveToBall();
+
+        //}
         
+
         // <stamina Counter> // if _hasStamina random /= 2
         /* This stamina timer system only works if players have different default stamina
          * however, that results in one player always winning a challenge. Refactor system
          * to be based around distance traveled rather than time passed, or another dynamic
          * method
-         */ 
-        
-        if (_hasStamina) staminaCounter -= Time.deltaTime;
+         */
 
-        if (staminaCounter <= _maxStamina - _maxStamina) _hasStamina = false;
+        _deltaDistance = Vector2.Distance(transform.position, _lastPosition);
+         
+        // if stamina < maxStamina, count up based on time
 
-        if (!_hasStamina) staminaCounter += Time.deltaTime;
+        if (stamina >= _maxStamina) _hasStamina = true;   // boolean definition of stamina
+        if (stamina <= 0) _hasStamina = false;
 
-        if (staminaCounter >= _maxStamina)  _hasStamina = true;
-        
-        if (_hasStamina) _speed = _staminaBoost;
-
-        if (!_hasStamina) _speed = _defaultSpeed;
-
-
-
-        MoveToBall();
-
-        if (_distanceToGoal < shotRadius)    // take shot when within radius
+        if (_hasStamina)
         {
-            _takeShot = true;
+            stamina -= _deltaDistance;
+            _speed = _speedBoost;
         }
-        
-        if (_takeShot)
+        if (!_hasStamina)
         {
-            _possession = false;
+            stamina += Time.deltaTime;
+            _speed = _defaultSpeed;
         }
+
+        
+        
+        _lastPosition = transform.position;
         
         // <Debug> //
+
+        MoveToBall();
         
-        
+        print("P1 Poss:" + _possession);
     }
 }
