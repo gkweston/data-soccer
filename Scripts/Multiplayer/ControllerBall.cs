@@ -115,9 +115,11 @@ public class ControllerBall : MonoBehaviour
             if (p1Stamina > p2Stamina)
             {
                 p1Possession = true;
+                p2Possession = false;
             }
             else
             {
+                p1Possession = false;
                 p2Possession = true;
             }
         }
@@ -126,10 +128,12 @@ public class ControllerBall : MonoBehaviour
         if (_p1DistanceToBall <= _possessionRadius && !(_p2DistanceToBall <= _possessionRadius))
         {
             p1Possession = true;
+            p2Possession = false;
         }
 
         if (_p2DistanceToBall <= _possessionRadius && !(_p1DistanceToBall <= _possessionRadius))
         {
+            p1Possession = true;
             p2Possession = true;
         }
         
