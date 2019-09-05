@@ -7,7 +7,7 @@ Various traits are necessary among human teams to effectively complete tasks as 
 >So, normal code right? 
 
 Yes, but no. If you're coding a dart's path, and script it to traverse a vector directly in line to the target, that's the explicit code the final stage of this project aims to avoid. Instead we can give the system a range of directions and magnitudes that it can pseudo-randomly "pick from," and nudge it in the right direction if it stumbles upon one which gets the dart close.
->Like strengthening a pathway between nodes in a neural-network...
+>Like strengthening a pathway between neurons in a neural-network...
 
 Bull's-eye!
 
@@ -51,7 +51,7 @@ If all teamwork traits are succesfully implemented, to the point that Team 1 per
 
 Supplemental
 -
-Being in the early stages of this project, pseudocode has been outlined for the implementation of teamwork traits with working single player scripts uploaded. The 2 player scripts uploaded are a refactored version of the original single player scripts, which require some debugging when another player is added. (README Updated 09/01/2019)
+Being in the early stages of this project, pseudocode has been outlined for the implementation of teamwork traits with working single player scripts uploaded. The 2 player scripts uploaded are a refactored version of the original single player scripts, which require some debugging when another player is added. (README Updated 09/05/2019)
 
 These teamwork traits are specifically picked from an [article on effective teamwork skills by Mike Schoultz.](https://medium.com/@mikeschoultz/10-team-characteristics-for-effective-teamwork-e0429b362ddd)
 
