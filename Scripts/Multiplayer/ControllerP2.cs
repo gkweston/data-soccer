@@ -6,7 +6,7 @@ using UnityEngine;
 public class ControllerP2 : MonoBehaviour
 {
     /*
-     * In simultaneous development with ControllerP2 as functions generalize between the two
+     * In simultaneous development with ControllerP1 as some functions generalize between the two
      */
     
     public Transform ballTrans;
@@ -16,18 +16,25 @@ public class ControllerP2 : MonoBehaviour
 
     private float _distanceToBall;
     private float _distanceToGoal;
+    
     private float speed = 1;
     
     private Vector2 _goalLine;
     private Vector2 _startingPosition;
+
+    public float stamina;
     
     
     void Start()
     {
-        _possession = false;
+
+        _possession = false;    // defaults to player not having possession before Finding possP2 object
+        
         _goalLine.x = 0f;
         _goalLine.y = -5.5f;
-        
+
+        stamina = 5;
+
     }
 
     void MoveToBall()
@@ -35,15 +42,6 @@ public class ControllerP2 : MonoBehaviour
         var position = transform.position;
         _distanceToBall = Vector2.Distance(position, ballTrans.position);    // updates distance to ball and goal to allow for player transform
         _distanceToGoal = Vector2.Distance(position, _goalLine);
-
-        if (_distanceToBall <= .25f && !_takeShot)    // defines radius which allows player to take possession of ball
-        {
-            _possession = true;
-        }
-        else
-        {
-            _possession = false;
-        }
 
         float step = speed * Time.deltaTime;    // defines velocity which player moves
         
@@ -62,19 +60,18 @@ public class ControllerP2 : MonoBehaviour
     
     void Update()
     {
-        var position = transform.position;
-        var ballPosition = ballTrans.position;
-        _distanceToBall = Vector2.Distance(position, ballPosition);
-        _distanceToGoal = Vector2.Distance(position, _goalLine);
-        
+        _possession = FindObjectOfType<ControllerBall>().p2Possession;    // check for expensive invocation in testing
 
+        //if (!_possession)
+        //{
+        //    MoveToBall();
 
-        float step = speed * Time.deltaTime;
-        transform.position = Vector2.MoveTowards(position, ballPosition, step);
-        
-        MoveToBall();
+        //}
         
         // <Debug> //
 
+        MoveToBall();
+        
+        print("P2 Poss:" + _possession);
     }
 }
