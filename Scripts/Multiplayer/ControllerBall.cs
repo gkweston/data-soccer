@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 public class ControllerBall : MonoBehaviour
 {
@@ -10,11 +12,10 @@ public class ControllerBall : MonoBehaviour
     
 
     // figure 8 variables //
-    public float rotateSpeed = 5f;    // only necessary to make ball move in figure 8, which is useful for testing player script
-    public float shotSpeed;
+    public float rotateSpeed = 0.5f;
     private float _angle;
-    public float radius = 0.1f;
-    private float _possessionRadius;
+    public float radius = 2;
+    
     
     // position vectors //
     private Vector2 _p1Goal;    // defines goal position on field
@@ -26,23 +27,25 @@ public class ControllerBall : MonoBehaviour
     public float shotRadius;    // allows shot radius to be changed and tested in Unity
 
     // booleans //
-    private bool _possessionP1;
+    public bool p1Possession;
     private bool _hasShotP1;
-    private bool _possessionP2;
+    public bool p2Possession;
     private bool _hasShotP2;
     
     // distance to ball and goal //
-    private float _distanceToBallP1;
-    private float _distanceToBallP2;
+    private float _p1DistanceToBall;        /*debug*/
+    private float _p2DistanceToBall;
     private float _distanceTopGoal;
     private float _distanceBottomGoal;
+    private float _possessionRadius;
     
     // stamina counters //
-    public float staminaP1;
-    public float staminaP2;
+    public float p1Stamina;
+    public float p2Stamina;
 
     // for S-curve shot //
-    public float sCurveConst;    // defines 'A' in S-Curve for shooting mechanics
+    public float shotSpeed = 2f;
+    public float sCurveConst = 20;    // defines 'A' in S-Curve for shooting mechanics
     private float _xComp;   // for S-curve
     private float _yComp;
     private float _randomNum;
@@ -50,10 +53,13 @@ public class ControllerBall : MonoBehaviour
     
     void Start()
     {
-        _possessionP1 = false;
+        
+        _possessionRadius = 0.05f;
+        p1Possession = false;
         _p1Goal.x = 0f;
         _p1Goal.y = 5.5f;
-        _possessionP2 = false;
+        
+        p2Possession = false;
         _p2Goal.x = 0f;
         _p2Goal.y = -5.5f;
         
@@ -61,18 +67,13 @@ public class ControllerBall : MonoBehaviour
         _randomNum = Random.Range(-0.3f, 0.3f);
         sCurveConst = 10 * shotRadius;
         
+        
+        // <Debug> //
 
-        _possessionRadius = 0.25f;
-
+        _center = transform.position;
     }
     
-    private void MakeFigureEight()    // Ball makes a figure eight, useful to test player movement and possession bools
-    {
-        _center = transform.position;
-        _angle += rotateSpeed * Time.deltaTime;
-        var offset = new Vector2(Mathf.Cos(_angle), Mathf.Sin(_angle) * Mathf.Cos(_angle)) * radius;
-        transform.position = _center + offset;
-    }
+    
 
     void ShotMechanics()    // implements 1/2 of s-curve whose deviation from line of shot depends on _randomNum range
     {
@@ -88,6 +89,7 @@ public class ControllerBall : MonoBehaviour
 
             _xComp = shotPosition.x;
             _yComp = shotPosition.y;
+            
         }
     }
     
@@ -95,110 +97,60 @@ public class ControllerBall : MonoBehaviour
     void Update()
     {
         
-        staminaP1 = FindObjectOfType<ControllerP1>().staminaCounter;    // These may be expensive calls
-        //staminaP2 = FindObjectOfType<ControllerP2>().staminaCounter;    // test in optimization stage
-
-
+        var p1Position = transP1.position;
+        var p2Position = transP2.position;
+        
+        p1Stamina = FindObjectOfType<ControllerP1>().stamina;    // These may be expensive calls
+        p2Stamina = FindObjectOfType<ControllerP2>().stamina;    // test in optimization stage
+        
         var ballPosition = transform.position;
-        _distanceToBallP1 = Vector2.Distance(ballPosition, transP1.position);
-        _distanceToBallP2 = Vector2.Distance(ballPosition, transP2.position);
+        _p1DistanceToBall = Vector2.Distance(ballPosition, p1Position);
+        _p2DistanceToBall = Vector2.Distance(ballPosition, p2Position);
 
-        
-        // p1 began head to head
-        if (_distanceToBallP1 <= _possessionRadius)
+        /* defining possession and passing to player controllers */
+
+        // this defines a stamina based challenge
+        if (_p1DistanceToBall <= _possessionRadius && _p2DistanceToBall <= _possessionRadius)    
         {
-            if (_distanceToBallP2 <= _possessionRadius)
+            if (p1Stamina > p2Stamina)
             {
-                if (staminaP1 > staminaP2)
-                {
-                    _possessionP1 = true;
-                }
-
-                if (staminaP2 > staminaP1)
-                {
-                    _possessionP2 = true;
-                }
+                p1Possession = true;
             }
-        }
-        else
-        {
-            _possessionP1 = true;
-        }
-
-        
-        // p2 began head to head
-        if (_distanceToBallP2 <= _possessionRadius)
-        {
-            if (_distanceToBallP1 <= _possessionRadius)
+            else
             {
-                if (staminaP2 > staminaP1)
-                {
-                    _possessionP2 = true;
-                }
-
-                if (staminaP1 > staminaP2)
-                {
-                    _possessionP1 = true;
-                }
-            }
-        }
-        else
-        {
-            _possessionP2 = true;
-        }
-
-        
-        // player 2 challenges player 1
-        if (_possessionP1 && (_distanceToBallP2 <= _possessionRadius))
-        {
-            if (staminaP2 > staminaP1)
-            {
-                _possessionP1 = false;
-                _possessionP2 = true;
+                p2Possession = true;
             }
         }
 
-        
-        // player 1 challenges player 2
-        if (_possessionP2 && (_distanceToBallP1 <= _possessionRadius))
+        // these define challengless possessions
+        if (_p1DistanceToBall <= _possessionRadius && !(_p2DistanceToBall <= _possessionRadius))
         {
-            if (staminaP1 > staminaP2)
-            {
-                _possessionP2 = false;
-                _possessionP1 = true;
-            }
-        }
-        
-        
-        // define ball position based on possession
-        if (_possessionP1)
-        {
-            transform.position = transP1.position;
+            p1Possession = true;
         }
 
-        if (_possessionP2)
+        if (_p2DistanceToBall <= _possessionRadius && !(_p1DistanceToBall <= _possessionRadius))
         {
-            transform.position = transP2.position;
+            p2Possession = true;
         }
-
-        _distanceTopGoal = Vector2.Distance(transform.position, _p1Goal);    // create TakeShot() to generalize between P1 and P2
-        if (_distanceTopGoal <= shotRadius)
-        {
-            ShotMechanics();
-        }
-        
         
         // <Debug> //
         
-        if (!_possessionP1 && !_possessionP2)
+
+
+        // Ball makes a figure eight, useful to test player movement and possession bools
+        _angle += rotateSpeed * Time.deltaTime;
+        var offset = new Vector2(Mathf.Sin(_angle) * Mathf.Cos(_angle), Mathf.Sin(_angle)) * radius;
+        transform.position = _center + offset;
+
+
+
+        
+        
+        if (p1Possession && p2Possession)
         {
-            MakeFigureEight();
+            print("It's broke yo!!!");
         }
-        
-        
-        
-        print("P1 Poss[" + _possessionP1 + "] Stam[" + staminaP1 + "]");
-        print("P2 Poss[" + _possessionP2 + "] Stam[" + staminaP2 + "]");
+
 
     }
 }
