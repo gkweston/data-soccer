@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Timers;
 using UnityEngine;
 
 public class ControllerP2 : MonoBehaviour
@@ -10,19 +7,22 @@ public class ControllerP2 : MonoBehaviour
      */
     
     public Transform ballTrans;
-
+    public float shotRadius = 2f;
+    
     private bool _possession;
-    private bool _takeShot;
+    public bool takeShot;
 
     private float _distanceToBall;
     private float _distanceToGoal;
     
-    private float speed = 1;
+    private float _speed = 1f;
     
     private Vector2 _goalLine;
     private Vector2 _startingPosition;
 
     public float stamina;
+
+    private bool _stall;
     
     
     void Start()
@@ -33,45 +33,47 @@ public class ControllerP2 : MonoBehaviour
         _goalLine.x = 0f;
         _goalLine.y = -5.5f;
 
-        stamina = 5;
+        stamina = 50f;
 
     }
 
-    void MoveToBall()
+    void PlayerMovement()
     {
         var position = transform.position;
         _distanceToBall = Vector2.Distance(position, ballTrans.position);    // updates distance to ball and goal to allow for player transform
         _distanceToGoal = Vector2.Distance(position, _goalLine);
-
-        float step = speed * Time.deltaTime;    // defines velocity which player moves
         
-        if (_possession && !_takeShot)    // if the player has ball, but is outside shooting radius, move towards goal
+        var step = _speed * Time.deltaTime;    // defines velocity which player moves
+
+        if (_possession)
         {
-            transform.position = Vector2.MoveTowards(position, _goalLine, step);
+            if (_distanceToGoal <= shotRadius)
+            {
+                takeShot = true;
+            }
+            else
+            {
+                if (_stall) return;
+                transform.position = Vector2.MoveTowards(position, _goalLine, step);
+            }
         }
         else
         {
-            if (!_takeShot)    // otherwise player does not have ball and must move towards it
-            {
-                transform.position = Vector2.MoveTowards(position, ballTrans.position, step);
-            }
+            if (_stall) return;
+            transform.position = Vector2.MoveTowards(position, ballTrans.position, step);
         }
     }
     
     void Update()
     {
+        _stall = FindObjectOfType<ControllerBall>().p2Stall;
         _possession = FindObjectOfType<ControllerBall>().p2Possession;    // check for expensive invocation in testing
-
-        //if (!_possession)
-        //{
-        //    MoveToBall();
-
-        //}
+        
+        PlayerMovement();
         
         // <Debug> //
 
-        MoveToBall();
+
         
-        print("P2 Poss:" + _possession);
     }
 }
