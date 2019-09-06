@@ -1,53 +1,37 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Timers;
 using UnityEngine;
-
-// tracks ball at speed set in Unity then shoots when in shooting radius of goal
-// conditionals and booleans need consolidation
-// defined as controller for 1st player, but will act as foundation for all players
 
 public class ControllerP1 : MonoBehaviour
 {
-    public Transform ballTrans;    // allows ball position to be shared with player
-
-    // <public variables> //
-    public float shotRadius;    // allows distance which player will take a shot to be assigned in Unity
+    public Transform ballTrans;
+    public float shotRadius = 2f;   
     
-    // <calculable distances> //
+    // calculable distances //
     private float _distanceToGoal;
     private float _distanceToBall;
     
-    // <position vectors> //
+    // position vectors //
     private Vector2 _goalLine;    // position of goal
     private Vector2 _startingPosition;
     
-    // <booleans> //
-    private bool _takeShot;
-    private bool _possession;
+    // booleans //
+    public bool takeShot;    // reads true if w/i shooting radius
+    private bool _possession;    // read in from ControllerBall.cs
+    private bool _p2Possession;
     
-    // <stamina variables> //
-    //private bool _hasStamina;
-    //public float stamina = 5;
-    //private float _maxStamina;
-    //private float _speedBoost = 2;
-    //private float _speed;
-    //private float _defaultSpeed = 1;
-    
+    // distance based stamina system variables //
     private Vector2 _lastPosition;
     private Vector2 _currentPosition;
-    private float _deltaDistance;
+    private float _deltaPosition;
     
     private bool _hasStamina;
     public float stamina;
-    private float _maxStamina = 5;
-    private float _speed = 1;
+    private float _maxStamina = 5f;
+    private float _speed = 1f;
     private float _defaultSpeed;
-    private float _speedBoost = 2;
-
+    private float _speedBoost = 3f;
     
-    private float _deltaPosition;    //for velocity based stamina system
+    // stall timer //
+    private bool _stall;
     
     
     void Start()
@@ -65,72 +49,65 @@ public class ControllerP1 : MonoBehaviour
 
     }
     
-    void MoveToBall()
+    void PlayerMovement()
     {
         var position = transform.position;
         _distanceToBall = Vector2.Distance(position, ballTrans.position);    // updates distance to ball and goal to allow for player transform
         _distanceToGoal = Vector2.Distance(position, _goalLine);
         
-        float step = _speed * Time.deltaTime;    // defines velocity which player moves
-        
-        if (_possession && !_takeShot)    // if the player has ball, but is outside shooting radius, move towards goal
+        var step = _speed * Time.deltaTime;    // defines velocity which player moves
+
+        if (_possession)
         {
-            transform.position = Vector2.MoveTowards(position, _goalLine, step);
+            if (_distanceToGoal <= shotRadius)
+            {
+                takeShot = true;
+            }
+            else
+            {
+                if (_stall) return;
+                transform.position = Vector2.MoveTowards(position, _goalLine, step);
+            }
         }
         else
         {
-            if (!_takeShot)    // otherwise player does not have ball and must move towards it
-            {
-                transform.position = Vector2.MoveTowards(position, ballTrans.position, step);
-            }
+            if (_stall) return;
+            transform.position = Vector2.MoveTowards(position, ballTrans.position, step);
         }
     }
-    
-    
-    void Update()
+
+    public void Stamina()
     {
-        _possession = FindObjectOfType<ControllerBall>().p1Possession;    // test for expensive invocation
-
-        //if (!_possession)
-        //{
-        //    MoveToBall();
-
-        //}
+        _deltaPosition = Vector2.Distance(transform.position, _lastPosition);
         
-
-        // <stamina Counter> // if _hasStamina random /= 2
-        /* This stamina timer system only works if players have different default stamina
-         * however, that results in one player always winning a challenge. Refactor system
-         * to be based around distance traveled rather than time passed, or another dynamic
-         * method
-         */
-
-        _deltaDistance = Vector2.Distance(transform.position, _lastPosition);
-         
-        // if stamina < maxStamina, count up based on time
-
-        if (stamina >= _maxStamina) _hasStamina = true;   // boolean definition of stamina
+        if (stamina >= _maxStamina) _hasStamina = true;
         if (stamina <= 0) _hasStamina = false;
 
         if (_hasStamina)
         {
-            stamina -= _deltaDistance;
+            stamina -= _deltaPosition;
             _speed = _speedBoost;
         }
+
         if (!_hasStamina)
         {
             stamina += Time.deltaTime;
             _speed = _defaultSpeed;
         }
-
-        
         
         _lastPosition = transform.position;
+    }
+
+    void Update()
+    {
+        _stall = FindObjectOfType<ControllerBall>().p1Stall;
+        _possession = FindObjectOfType<ControllerBall>().p1Possession;    // test for expensive invocation
+
+        PlayerMovement();
+        Stamina();
         
         // <Debug> //
 
-        MoveToBall();
-        
-        print("P1 Poss:" + _possession);
+
     }
 }
