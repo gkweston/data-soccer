@@ -1,4 +1,4 @@
-# Overview & Supplemental
+## Overview & Supplemental
 Various traits are necessary among human teams to effectively complete tasks as a cohensive unit. If similar traits may be implemented in a digital environment, they may facillitate a more efficient execution of end goals. This project will approach how these traits can effectively be implemented from a computing standpoint. If these processes provide data that can allow for the isolation of trends, then an automated approach will be designed to "train" these traits in a system without explicitly writing code to achieve those ends. Explicit code is loosely defined here as direct structures, functions, conditionals or otherwise which dictate the program's actions. 
 >So, normal code right? 
 
