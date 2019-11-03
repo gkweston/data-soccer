@@ -73,6 +73,7 @@ public class ControllerBall : MonoBehaviour {
         /*
          * This method continuously adds and removes the winning player from a dictionary
          * however it generalized to n players better that purely comparison based operations
+         * while retaining O(n) complexity
          */
         var player1Position = Player1Transform.position;
         var player2Position = Player2Transform.position;
