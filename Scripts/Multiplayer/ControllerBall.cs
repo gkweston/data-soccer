@@ -168,6 +168,11 @@ public class ControllerBall : MonoBehaviour {
     void BallPosition() {
         // Ball makes a figure eight, useful to test player movement and possession bools
         // Debug fig-8
+        
+        /*
+         * May consolidate w/ challenge method
+         */
+        
         while (!(p1Possession || p2Possession)) {
             _angle += rotateSpeed * Time.deltaTime;
             var offset = new Vector2(Mathf.Sin(_angle) * Mathf.Cos(_angle), Mathf.Sin(_angle)) * radius;
