@@ -21,7 +21,7 @@ public class ControllerBall : MonoBehaviour {
     public bool p1Possession, p2Possession;
     
     // distance to ball and goal //
-    private float _p1DistanceToBall;        /*debug*/
+    private float _p1DistanceToBall;     
     private float _p2DistanceToBall;
     private float _possessionRadius;
     
