@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,14 +20,14 @@ public class ControllerBall : MonoBehaviour {
     public bool p1Possession, p2Possession;
     
     // distance to ball and goal //
-    private float _p1DistanceToBall;     
+    private float _p1DistanceToBall;
     private float _p2DistanceToBall;
     private float _possessionRadius;
     
     // Shot mechanics //
     public float shotSpeed = 5f;
-    public float sCurveConst = 20;    // defines 'A' in S-Curve for shooting mechanics
-    private float _xComp, _yComp;   // for S-curve
+    public float sCurveConst = 20;
+    private float _xComp, _yComp;
     private float _randomNum, _shotRadius;
     private bool _p1TakeShot, _p2TakeShot;
 
@@ -45,7 +44,7 @@ public class ControllerBall : MonoBehaviour {
         _p2Goal.x = 0f;
         _p2Goal.y = -5.5f;
         
-        _randomNum = Random.Range(-0.3f, 0.3f);
+        _randomNum = UnityEngine.Random.Range(-0.3f, 0.3f);
         sCurveConst = 10 * _shotRadius;
         
         
@@ -73,7 +72,12 @@ public class ControllerBall : MonoBehaviour {
         /*
          * This method continuously adds and removes the winning player from a dictionary
          * however it generalized to n players better that purely comparison based operations
-         * while retaining O(n) complexity
+         * while maintaining O(n)
+         * Implicit team assignment prevents extra pull data from player classes
+         * -> Team 2: even playerNum;
+         * -> Team 1: odd playerNum;
+         * For team stat based challenge either iterate through even/odds or     [ ]
+         * compare max dictionary values per team, then iterate through team     [x]
          */
         var player1Position = Player1Transform.position;
         var player2Position = Player2Transform.position;
@@ -105,6 +109,60 @@ public class ControllerBall : MonoBehaviour {
         return winner;
     }
 
+    int GeneralizedChallenge() {
+        var player1Position = Player1Transform.position;
+        var player2Position = Player2Transform.position;
+        _p1DistanceToBall = Mathf.Abs((transform.position - player1Position).magnitude);
+        _p2DistanceToBall = Mathf.Abs((transform.position - player2Position).magnitude);
+
+        Dictionary<int, float> team1Stamina = new Dictionary<int, float>();
+        Dictionary<int, float> team2Stamina = new Dictionary<int, float>();
+
+        if (_p1DistanceToBall < _possessionRadius){
+            float p1Stam = GetComponent<StaminaP1>().stamina;
+            team1Stamina.Add(1, p1Stam);
+        }
+
+        if (_p2DistanceToBall < _possessionRadius){
+            float p2Stam = GetComponent<StaminaP2>().stamina;
+            team2Stamina.Add(2, p2Stam);
+        }
+        /*
+         * .
+         * .
+         * .
+         * player_n
+         */
+
+        var team1Max = team1Stamina.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
+        var team2Max = team1Stamina.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
+
+        if (team1Max > team2Max){
+            List<int> randPick = new List<int>();
+            foreach (KeyValuePair<int, float> entry in team1Stamina){
+                for (int i = 0; i < entry.Value; ++i){
+                    randPick.Add(entry.Key);
+                }
+            }
+
+            var rand = new System.Random();
+            int index = rand.Next(randPick.Count);
+            return index;
+        }
+        if (team2Max > team1Max){
+            List<int> randPick = new List<int>();
+            foreach (KeyValuePair<int, float> entry in team2Stamina){
+                for (int i = 0; i < entry.Value; ++i){
+                    randPick.Add(entry.Key);
+                }
+            }
+
+            var rand = new System.Random();
+            int index = rand.Next(randPick.Count);
+            return index;
+        }
+        throw new InvalidOperationException("Generalized challenge exception");
+    }
 
     
     void BallPosition() {
@@ -117,6 +175,7 @@ public class ControllerBall : MonoBehaviour {
         }
 
         int currentPossession = Challenge();
+        //int currentPossession = GeneralizedChallenge();
         
         if (currentPossession == 1){
             transform.position = Player1Transform.position;
