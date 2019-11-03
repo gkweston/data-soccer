@@ -22,13 +22,11 @@ public class StaminaP1 : MonoBehaviour {
             increase = true;
         else if (stamina >= maxStam)
             increase = false;
-
         if (increase)
             stamina += Time.deltaTime;
         else
             stamina -= deltaP;
         
-
         return stamina;  
     }
 
