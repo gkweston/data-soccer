@@ -13,18 +13,6 @@ public class DB_BallCon : MonoBehaviour{
     public static float playerPossRad;    // 0.1 - 0.15 is an acceptable radius for possession
 
     void BasicPossession(){
-        
-        /* Try */
-        
-        
-        
-        //staminaP1 = GetComponent<DB_StaminaHandler>().staminaP1;
-        //staminaP2 = GetComponent<DB_StaminaHandler>().staminaP2;
-        
-        
-        
-        /* end try */
-
         var ballPosition = transform.position;
         var player1Position = player1Transform.position;
         var player2Position = player2Transform.position;
