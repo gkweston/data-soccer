@@ -1,7 +1,7 @@
 using UnityEngine;
 using Random = UnityEngine.Random;
 /* player index starting at 0 */
-public class DB_BallCon : MonoBehaviour{
+public class Obj_BallController : MonoBehaviour{
     /* private: */
     private int randomPossession;
     private float staminaP1, staminaP2;
@@ -13,6 +13,7 @@ public class DB_BallCon : MonoBehaviour{
     public static float playerPossRad;    // 0.1 - 0.15 is an acceptable radius for possession
 
     void BasicPossession(){
+
         var ballPosition = transform.position;
         var player1Position = player1Transform.position;
         var player2Position = player2Transform.position;
