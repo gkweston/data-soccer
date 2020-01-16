@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 /* player index starting at 0 */
-public class DB_StaminaHandler : MonoBehaviour{
+public class Obj_StaminaHandler : MonoBehaviour{
+
     /* private */
     private Vector3 p0LastPosition, p1LastPosition;
     private static int maxStaminaGet;
@@ -37,8 +38,7 @@ public class DB_StaminaHandler : MonoBehaviour{
     }
 
     private void UpdateStaminaList(){
-        // Call in update to keep stamina_list up to date
-        // reference public stamina_list in other methods as needed
+        /* Stamina values are indexed by player number */
         stamina_list.Clear();
         stamina_list.Add(DeltaStamina(p0Trans, p0LastPosition, _p0Stamina, ref _p0IncreaseStam));
         stamina_list.Add(DeltaStamina(p1Trans, p1LastPosition, _p0Stamina, ref _p1IncreaseStam));
