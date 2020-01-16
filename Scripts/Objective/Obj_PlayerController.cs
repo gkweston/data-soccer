@@ -1,6 +1,6 @@
 using UnityEngine;
 /* player index starting at 0 */
-public class DB_PlayerCon : MonoBehaviour{
+public class Obj_PlayerController : MonoBehaviour{
     /* private: */
     private Vector2 goalPosition;
     private float playerStamina;
@@ -9,7 +9,7 @@ public class DB_PlayerCon : MonoBehaviour{
     /* public: */
     public int playerNumber;
     public Transform ballTransform;
-    public static float possessionRadius = DB_BallCon.playerPossRad;
+    public static float possessionRadius = Obj_BallController.playerPossRad;
     public int standardSpeed;
     public int staminaBoost;
 
@@ -27,7 +27,7 @@ public class DB_PlayerCon : MonoBehaviour{
 
     public int GetTeamNumber(){ return teamNumber; }
 
-    private void PlayerStaminaUpdate(){ playerStamina = DB_StaminaHandler.GetStaminaList()[playerNumber]; }
+    private void PlayerStaminaUpdate(){ playerStamina = Obj_StaminaHandler.GetStaminaList()[playerNumber]; }
 
     private void PlayerMovement(){
         PlayerStaminaUpdate();
